@@ -28,7 +28,7 @@ class MultipartParser
       header = part.split(/\r\n\r\n/)[0]
       # remove the header from the part
       part.slice!("#{header}\r\n\r\n")
-      OpenStruct.new(header: header, body: part)
+      OpenStruct.new(header:, body: part)
     end
   end
 

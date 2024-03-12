@@ -28,9 +28,9 @@ describe SoapScum::WSSecurity do
 
   before do
     SoapScum::WSSecurity.configure(
-      client_keyfile: client_keyfile,
-      server_cert: server_cert,
-      keypass: keypass
+      client_keyfile:,
+      server_cert:,
+      keypass:
     )
   end
 
@@ -58,7 +58,7 @@ describe SoapScum::WSSecurity do
       SoapScum::WSSecurity.configure(
         client_keyfile: server_keyfile,
         server_cert: client_cert,
-        keypass: keypass
+        keypass:
       )
 
       decrypted_doc = SoapScum::WSSecurity.decrypt(result.to_xml)

@@ -6,7 +6,7 @@ Connect VBMS is a Ruby gem for communicating with the eFolder Service API provid
 
 ## Prerequisites
 
-- Ruby 2.2 or above
+- Ruby 3.2 or above
 	- Bundler 1.10 or above (`gem install bundle`)
 - [Java JDK 1.7 or above](http://www.oracle.com/technetwork/java/javase/downloads/index.html)
 - [Python 2.6 or above](https://www.python.org/downloads/)

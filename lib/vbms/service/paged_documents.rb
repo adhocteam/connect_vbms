@@ -29,13 +29,13 @@ module VBMS
           pages += 1
         end
 
-        { paging: pagination, pages: pages, documents: documents }
+        { paging: pagination, pages:, documents: }
       end
 
       private
 
       def next_request(file_number, offset)
-        VBMS::Requests::FindPagedDocumentSeriesReferences.new(file_number: file_number, offset: offset)
+        VBMS::Requests::FindPagedDocumentSeriesReferences.new(file_number:, offset:)
       end
     end
   end

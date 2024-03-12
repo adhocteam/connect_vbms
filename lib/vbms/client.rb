@@ -29,9 +29,9 @@ module VBMS
       @use_forward_proxy = use_forward_proxy
 
       SoapScum::WSSecurity.configure(
-        client_keyfile: client_keyfile,
-        server_cert: server_cert,
-        keypass: keypass
+        client_keyfile:,
+        server_cert:,
+        keypass:
       )
     end
 
@@ -45,11 +45,11 @@ module VBMS
         server_cert: env_path(env_dir, "CONNECT_VBMS_SERVER_CERT", allow_empty: true),
         ca_cert: env_path(env_dir, "CONNECT_VBMS_CACERT", allow_empty: true),
         saml: env_path(env_dir, "CONNECT_VBMS_SAML"),
-        css_id: css_id,
-        station_id: station_id,
-        use_forward_proxy: use_forward_proxy,
+        css_id:,
+        station_id:,
+        use_forward_proxy:,
         proxy_base_url: get_env("CONNECT_VBMS_PROXY_BASE_URL", allow_empty: true),
-        logger: logger
+        logger:
       )
     end
 
@@ -61,7 +61,7 @@ module VBMS
     end
 
     def self.env_path(env_dir, env_var_name, allow_empty: false)
-      value = get_env(env_var_name, allow_empty: allow_empty)
+      value = get_env(env_var_name, allow_empty:)
       return nil if value.nil?
 
       File.join(env_dir, value)
@@ -96,7 +96,7 @@ module VBMS
         response_code: response.code,
         request_body: serialized_doc.to_s,
         response_body: response.body,
-        request: request
+        request:
       )
 
       raise VBMS::HTTPError.from_http_error(response.code, response.body, request) if response.code != 200
@@ -211,7 +211,7 @@ module VBMS
       check_soap_errors(doc, response)
       data = SoapScum::WSSecurity.decrypt(doc.to_xml)
 
-      log(:decrypted_message, decrypted_data: data, request: request)
+      log(:decrypted_message, decrypted_data: data, request:)
 
       doc = parse_xml_strictly(data)
 

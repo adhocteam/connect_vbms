@@ -10,7 +10,7 @@ describe VBMS::Service::PagedDocuments do
   let(:version_sets) { 2 } # MUST divide page_size evenly.
   let(:small_return_set) { false }
 
-  subject { described_class.new(client: client) }
+  subject { described_class.new(client:) }
 
   def build_documents(max)
     (1..max).map { |x| OpenStruct.new(document_id: "{#{@offset}-#{x}-xxx-nnn-yyy}") }
@@ -37,7 +37,7 @@ describe VBMS::Service::PagedDocuments do
     (1..num_sets).map do
       {
         paging: { :@next_start_index => @offset, :@total_result_count => total_docs },
-        documents: documents
+        documents:
       }
     end
   end
@@ -49,7 +49,7 @@ describe VBMS::Service::PagedDocuments do
   describe "#call" do
     context "when there are multiple versions" do
       it "returns total documents with pagination metadata" do
-        r = subject.call(file_number: file_number)
+        r = subject.call(file_number:)
 
         expect(r[:pages]).to eq((total_docs / page_size.to_f).ceil(0))
         expect(r[:documents].length).to eq total_docs
@@ -61,7 +61,7 @@ describe VBMS::Service::PagedDocuments do
       let(:version_sets) { 1 }
 
       it "returns total documents with pagination metadata" do
-        r = subject.call(file_number: file_number)
+        r = subject.call(file_number:)
 
         expect(r[:pages]).to eq((total_docs / page_size.to_f).ceil(0))
         expect(r[:documents].length).to eq total_docs
@@ -74,7 +74,7 @@ describe VBMS::Service::PagedDocuments do
       let(:total_docs) { page_size - 1 }
 
       it "believes the next_offset over the returned document count" do
-        r = subject.call(file_number: file_number)
+        r = subject.call(file_number:)
 
         expect(r[:pages]).to eq(1)
         expect(r[:documents].length).to eq(total_docs - 1)
@@ -85,7 +85,7 @@ describe VBMS::Service::PagedDocuments do
     context "when the first page contains no sections" do
       it "raises a ZeroPagesError" do
         allow(client).to receive(:send_request).and_return []
-        expect { subject.call(file_number: file_number) }.to raise_error(VBMS::ZeroPagesError)
+        expect { subject.call(file_number:) }.to raise_error(VBMS::ZeroPagesError)
       end
     end
   end

@@ -9,11 +9,11 @@ Gem::Specification.new do |spec|
   spec.version       = VBMS::VERSION
   spec.authors       = ["Alex Gaynor", "Bill Mill", "Albert Wong"]
   spec.email         = ["alex.gaynor@va.gov", "bill@adhocteam.us", "albert.wong@va.gov"]
-
   spec.platform      = Gem::Platform::RUBY
   spec.summary       = "Connect to VBMS with ease"
   spec.description   = "Connect to VBMS with ease"
   spec.homepage      = "http://va.gov"
+  spec.required_ruby_version = ">= 3.2"
 
   # Prevent pushing this gem to RubyGems.org by setting 'allowed_push_host', or
   # delete this section to allow pushing this gem to any host.

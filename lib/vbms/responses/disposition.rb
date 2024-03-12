@@ -18,7 +18,7 @@ module VBMS
       end
 
       def to_h
-        { claim_id: claim_id, contention_id: contention_id, disposition: disposition }
+        { claim_id:, contention_id:, disposition: }
       end
 
       alias to_s inspect

@@ -19,7 +19,7 @@ describe VBMS::Requests do
       file.write("hello world")
       file.rewind
       content_hash = Digest::SHA1.hexdigest(file.read)
-      request = VBMS::Requests::InitializeUpload.new(content_hash: content_hash,
+      request = VBMS::Requests::InitializeUpload.new(content_hash:,
                                                      filename: File.basename(file),
                                                      file_number: "784449089",
                                                      va_receive_date: Time.now,

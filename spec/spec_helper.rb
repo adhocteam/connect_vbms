@@ -109,7 +109,7 @@ def java_decrypt_xml(xml,
     t.write(xml)
     t.flush
     return java_decrypt_file(t.path, keyfile, keypass,
-                             ignore_timestamp: ignore_timestamp)
+                             ignore_timestamp:)
   end
 end
 
@@ -136,7 +136,7 @@ def webmock_multipart_response(endpoint_url, response_file, request_name)
   headers, body_text = split_message(response)
   body = ERB.new(body_text).result(binding)
 
-  stub_request(:post, endpoint_url).to_return(body: body, headers: headers)
+  stub_request(:post, endpoint_url).to_return(body:, headers:)
 end
 
 def parsed_timestamp(xml)
@@ -157,9 +157,9 @@ def new_test_client(css_id: nil, station_id: nil, use_forward_proxy: false)
     client_keyfile: fixture_path("test_client.p12"),
     server_cert: fixture_path("test_server.crt"),
     saml: fixture_path("test_samltoken.xml"),
-    css_id: css_id,
-    station_id: station_id,
-    use_forward_proxy: use_forward_proxy,
+    css_id:,
+    station_id:,
+    use_forward_proxy:,
     proxy_base_url: use_forward_proxy ? "http://localhost:3000" : nil
   )
 end

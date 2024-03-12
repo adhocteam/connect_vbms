@@ -95,7 +95,7 @@ module VBMS
         t.write(in_xml)
         t.flush
         return decrypt_message(t.path, keyfile, keypass, logfile,
-                               ignore_timestamp: ignore_timestamp)
+                               ignore_timestamp:)
       end
     end
   end

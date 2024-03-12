@@ -54,7 +54,7 @@ module VBMS
               construct_response(versions)
             end
           end || []
-          { paging: paging, documents: documents.flatten }
+          { paging:, documents: documents.flatten }
         end
       end
 
