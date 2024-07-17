@@ -21,7 +21,7 @@ describe VBMS::Responses::Disposition do
     let(:attrs) do
       { claim_id: "600097563", contention_id: "175506", disposition: "Granted" }
     end
-    subject { VBMS::Responses::Disposition.new(attrs) }
+    subject { VBMS::Responses::Disposition.new(**attrs) }
 
     it "should respond to to_h" do
       expect(subject.to_h).to be_a(Hash)

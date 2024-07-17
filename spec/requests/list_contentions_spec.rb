@@ -2,7 +2,7 @@
 
 describe VBMS::Requests::ListContentions do
   let(:request) do
-    VBMS::Requests::ListContentions.new(claim_id: "1323123")
+    VBMS::Requests::ListContentions.new("1323123")
   end
 
   context "soap_doc" do
