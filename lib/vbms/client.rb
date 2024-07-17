@@ -85,21 +85,17 @@ module VBMS
       # https://www.envoyproxy.io/docs/envoy/latest/api-v1/route_config/vcluster.html
       url = @use_forward_proxy ? request.endpoint_url("#{@proxy_base_url}/envoy-prefix-#{request.name}") : request.endpoint_url(@base_url)
       headers = { "Content-Type" => content_type(request) }
-      http_request = build_request(url,
-                                   body, headers)
-
-      HTTPI.log = false
-      response = HTTPI.post(http_request)
+      response = execute_request(url, body, headers)
 
       log(
         :request,
-        response_code: response.code,
+        response_code: response.status,
         request_body: serialized_doc.to_s,
         response_body: response.body,
         request: request
       )
 
-      raise VBMS::HTTPError.from_http_error(response.code, response.body, request) if response.code != 200
+      raise VBMS::HTTPError.from_http_error(response.status, response.body, request) if response.status != 200
 
       process_response(request, response)
     end
@@ -162,26 +158,24 @@ module VBMS
       end
     end
 
-    def build_request(endpoint_url, body, headers = {})
-      if @use_forward_proxy
-        # If we're using a forward proxy, add the eventual
-        # destination host as a header.
-        headers["Host"] = @base_url.gsub("https://", "").gsub("http://", "")
+    def execute_request(endpoint_url, body, headers = {})
+      # If using a forward proxy, add the eventual destination host as a header
+      headers["Host"] = @base_url.gsub("https://", "").gsub("http://", "") if @use_forward_proxy
+
+      conn = Faraday.new(url: endpoint_url) do |faraday|
+        faraday.ssl[:ca_file] = @cacert
+        faraday.ssl[:verify] = true
+        faraday.options[:timeout] = 1200 # read timeout
+        faraday.options[:open_timeout] = 10 # open timeout
+
+        faraday.response :json, content_type: /\bjson$/
+        faraday.request :authorization, :basic, SoapScum::WSSecurity.client_key, @keypass
       end
 
-      request = HTTPI::Request.new(endpoint_url)
-
-      request.open_timeout               = 10 # seconds
-      request.read_timeout               = 1200 # seconds
-      request.auth.ssl.cert_key          = SoapScum::WSSecurity.client_key
-      request.auth.ssl.cert_key_password = @keypass
-      request.auth.ssl.cert              = SoapScum::WSSecurity.client_cert
-      request.auth.ssl.ca_cert_file      = @cacert
-      request.auth.ssl.verify_mode       = :peer
-      request.body = body
-      request.headers = headers
-
-      request
+      conn.post do |req|
+        req.body = body
+        req.headers = headers
+      end
     end
 
     def parse_xml_strictly(xml_string)
