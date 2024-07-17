@@ -85,7 +85,7 @@ module VBMS
       # https://www.envoyproxy.io/docs/envoy/latest/api-v1/route_config/vcluster.html
       url = @use_forward_proxy ? request.endpoint_url("#{@proxy_base_url}/envoy-prefix-#{request.name}") : request.endpoint_url(@base_url)
       headers = { "Content-Type" => content_type(request) }
-      response = build_request(url, body, headers)
+      response = execute_request(url, body, headers)
 
       log(
         :request,
@@ -158,49 +158,22 @@ module VBMS
       end
     end
 
-    # def build_request(endpoint_url, body, headers = {})
-    #   if @use_forward_proxy
-    #     # If we're using a forward proxy, add the eventual
-    #     # destination host as a header.
-    #     headers["Host"] = @base_url.gsub("https://", "").gsub("http://", "")
-    #   end
-
-    #   request = HTTPI::Request.new(endpoint_url)
-
-    #   request.open_timeout               = 10 # seconds
-    #   request.read_timeout               = 1200 # seconds
-    #   request.auth.ssl.cert_key          = SoapScum::WSSecurity.client_key
-    #   request.auth.ssl.cert_key_password = @keypass
-    #   request.auth.ssl.cert              = SoapScum::WSSecurity.client_cert
-    #   request.auth.ssl.ca_cert_file      = @cacert
-    #   request.auth.ssl.verify_mode       = :peer
-    #   request.body = body
-    #   request.headers = headers
-
-    #   request
-    # end
-
-    def build_request(endpoint_url, body, headers = {})
+    def execute_request(endpoint_url, body, headers = {})
       # If using a forward proxy, add the eventual destination host as a header
       if @use_forward_proxy
         headers["Host"] = @base_url.gsub("https://", "").gsub("http://", "")
       end
 
-      # Create a Faraday connection
       conn = Faraday.new(url: endpoint_url) do |faraday|
         faraday.ssl[:ca_file] = @cacert
         faraday.ssl[:verify] = true
         faraday.options[:timeout] = 1200 # read timeout
         faraday.options[:open_timeout] = 10 # open timeout
 
-        # Add middleware if necessary (for JSON, etc.)
         faraday.response :json, content_type: /\bjson$/
-
-        # Add basic auth
         faraday.request :authorization, :basic, SoapScum::WSSecurity.client_key, @keypass
       end
 
-      # Make the POST request
       response = conn.post do |req|
         req.body = body
         req.headers = headers
@@ -208,37 +181,6 @@ module VBMS
 
       response
     end
-
-
-    # def execute_http_request(endpoint_url, body, headers = {})
-    #   uri = URI.parse(endpoint_url)
-
-    #   if @use_forward_proxy
-    #     headers["Host"] = @base_url.gsub("https://", "").gsub("http://", "")
-    #   end
-
-    #   request = Net::HTTP::Post.new(uri.path)
-    #   request.body = body
-    #   request.initialize_http_header(headers)
-
-    #   # SSL configuration
-    #   request_key = OpenSSL::PKey::RSA.new(SoapScum::WSSecurity.client_key)
-    #   request_cert = OpenSSL::X509::Certificate.new(SoapScum::WSSecurity.client_cert)
-    #   ca_cert_file = SoapScum::WSSecurity.client_cert
-
-    #   http = Net::HTTP.new(uri.host, uri.port)
-    #   http.use_ssl = (uri.scheme == "https")
-    #   http.verify_mode = OpenSSL::SSL::VERIFY_PEER
-    #   http.cert = request_cert
-    #   http.key = request_key
-    #   http.ca_file = ca_cert_file
-
-    #   http.open_timeout = 10 # seconds
-    #   http.read_timeout = 1200 # seconds
-
-    #   response = http.start { |h| h.request(request) }
-    #   response
-    # end
 
     def parse_xml_strictly(xml_string)
       begin

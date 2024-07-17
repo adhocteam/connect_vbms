@@ -57,7 +57,7 @@ describe VBMS::Client do
 
     it "creates log message" do
       body = VBMS::Requests.soap { "body" }
-      allow(@client).to receive(:build_request).and_return(@response)
+      allow(@client).to receive(:execute_request).and_return(@response)
       allow(Faraday).to receive(:new).and_return(double(post: @response))
 
       allow(@client).to receive(:process_response).and_return(nil)
@@ -285,7 +285,7 @@ describe VBMS::Client do
     end
   end
 
-  describe "#build_request" do
+  describe "#execute_request" do
     before do
       @client = new_test_client(use_forward_proxy: true)
       @base_url = "http://test.endpoint.url/"
@@ -295,7 +295,7 @@ describe VBMS::Client do
         .to_return(status: 200, body: "response", headers: {})
     end
 
-    subject { @client.build_request("https://some.fake.endpoint", {}, {}) }
+    subject { @client.execute_request("https://some.fake.endpoint", {}, {}) }
 
     it "adds host header required by proxy" do
       expect(subject.env.request_headers["Host"]).to eq("test.endpoint.url/")
