@@ -15,6 +15,8 @@ Gem::Specification.new do |spec|
   spec.description   = "Connect to VBMS with ease"
   spec.homepage      = "http://va.gov"
 
+  spec.required_ruby_version = '>= 3.0.0'
+
   # Prevent pushing this gem to RubyGems.org by setting 'allowed_push_host', or
   # delete this section to allow pushing this gem to any host.
   raise "RubyGems 2.0 or newer is required to protect against public gem pushes." unless spec.respond_to?(:metadata)
