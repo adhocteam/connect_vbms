@@ -1,5 +1,5 @@
 # frozen_string_literal: true
 
 module VBMS
-  VERSION = "0.1.3"
+  VERSION = "2.1.0"
 end
