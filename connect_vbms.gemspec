@@ -15,7 +15,7 @@ Gem::Specification.new do |spec|
   spec.description   = "Connect to VBMS with ease"
   spec.homepage      = "http://va.gov"
 
-  spec.required_ruby_version = '>= 3.0.0'
+  spec.required_ruby_version = ">= 3.0.0"
 
   # Prevent pushing this gem to RubyGems.org by setting 'allowed_push_host', or
   # delete this section to allow pushing this gem to any host.
@@ -39,8 +39,8 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "timecop"
   spec.add_development_dependency "webmock", "~> 2.3.0"
 
-  spec.add_runtime_dependency "httpclient", "~> 2.8.0"
   spec.add_runtime_dependency "faraday", "~> 2.10"
+  spec.add_runtime_dependency "httpclient", "~> 2.8.0"
   spec.add_runtime_dependency "mail"
   spec.add_runtime_dependency "nokogiri", ">= 1.8.4"
   spec.add_runtime_dependency "nori"

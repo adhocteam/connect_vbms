@@ -46,8 +46,8 @@ describe VBMS::Client do
                         multipart?: false,
                         soap_doc: VBMS::Requests.soap { "body" },
                         signed_elements: [["/soapenv:Envelope/soapenv:Body",
-                                          { soapenv: SoapScum::XMLNamespaces::SOAPENV },
-                                          "Content"]])
+                                           { soapenv: SoapScum::XMLNamespaces::SOAPENV },
+                                           "Content"]])
 
       allow(@request).to receive(:inject_header_content)
       allow(@request).to receive(:endpoint_url)
@@ -291,8 +291,8 @@ describe VBMS::Client do
       @base_url = "http://test.endpoint.url/"
       allow(@client).to receive(:@base_url).and_return(@base_url)
 
-      stub_request(:post, /./)  # Matches any URL
-        .to_return(status: 200, body: "response", headers: {})
+      stub_request(:post, /./).  # Matches any URL
+        to_return(status: 200, body: "response", headers: {})
     end
 
     subject { @client.execute_request("https://some.fake.endpoint", {}, {}) }

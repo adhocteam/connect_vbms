@@ -5,10 +5,8 @@ require "base64"
 require "benchmark"
 require "erb"
 require "httpclient"
-require 'net/http'
-require 'uri'
+require "faraday"
 require "tempfile"
-require "uri"
 require "nokogiri"
 require "mail"
 

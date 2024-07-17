@@ -160,9 +160,7 @@ module VBMS
 
     def execute_request(endpoint_url, body, headers = {})
       # If using a forward proxy, add the eventual destination host as a header
-      if @use_forward_proxy
-        headers["Host"] = @base_url.gsub("https://", "").gsub("http://", "")
-      end
+      headers["Host"] = @base_url.gsub("https://", "").gsub("http://", "") if @use_forward_proxy
 
       conn = Faraday.new(url: endpoint_url) do |faraday|
         faraday.ssl[:ca_file] = @cacert
@@ -174,12 +172,10 @@ module VBMS
         faraday.request :authorization, :basic, SoapScum::WSSecurity.client_key, @keypass
       end
 
-      response = conn.post do |req|
+      conn.post do |req|
         req.body = body
         req.headers = headers
       end
-
-      response
     end
 
     def parse_xml_strictly(xml_string)
