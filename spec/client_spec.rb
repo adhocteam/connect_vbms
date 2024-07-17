@@ -46,18 +46,19 @@ describe VBMS::Client do
                         multipart?: false,
                         soap_doc: VBMS::Requests.soap { "body" },
                         signed_elements: [["/soapenv:Envelope/soapenv:Body",
-                                           { soapenv: SoapScum::XMLNamespaces::SOAPENV },
-                                           "Content"]])
+                                          { soapenv: SoapScum::XMLNamespaces::SOAPENV },
+                                          "Content"]])
 
       allow(@request).to receive(:inject_header_content)
       allow(@request).to receive(:endpoint_url)
 
-      @response = double("response", code: 200, body: "response")
+      @response = double("response", status: 200, body: "response")
     end
 
     it "creates log message" do
       body = VBMS::Requests.soap { "body" }
-      allow(HTTPI).to receive(:post).and_return(@response)
+      allow(@client).to receive(:build_request).and_return(@response)
+      allow(Faraday).to receive(:new).and_return(double(post: @response))
 
       allow(@client).to receive(:process_response).and_return(nil)
       allow(@client).to receive(:wrap_in_soap).and_return(body.to_s)
@@ -66,7 +67,7 @@ describe VBMS::Client do
       allow(@client).to receive(:serialize_document).and_return(body.to_s)
       allow(@client).to receive(:process_body)
 
-      expect(@client).to receive(:log).with(:request, response_code: @response.code,
+      expect(@client).to receive(:log).with(:request, response_code: @response.status,
                                                       request_body: body.to_s,
                                                       response_body: @response.body,
                                                       request: @request)
@@ -78,8 +79,8 @@ describe VBMS::Client do
       context "error is a known specific error" do
         it "raises a custom error based on the error body" do
           VBMS::HTTPError::KNOWN_ERRORS.each do |err_str, err_class|
-            error_response = double("response", code: 400, body: err_str)
-            allow(HTTPI).to receive(:post).and_return(error_response)
+            error_response = double("response", status: 400, body: err_str)
+            allow(Faraday).to receive(:new).and_return(double(post: error_response))
 
             expect { @client.send_request(@request) }.to raise_error do |error|
               expect(error.class).to eq "VBMS::#{err_class}".constantize
@@ -93,8 +94,8 @@ describe VBMS::Client do
 
       context "error is not a known specific error" do
         it "raises VBMS::HTTPError" do
-          error_response = double("response", code: 400, body: "generic")
-          allow(HTTPI).to receive(:post).and_return(error_response)
+          error_response = double("response", status: 400, body: "generic")
+          allow(Faraday).to receive(:new).and_return(double(post: error_response))
 
           expect { @client.send_request(@request) }.to raise_error do |error|
             expect(error.class).to eq VBMS::HTTPError
@@ -107,8 +108,8 @@ describe VBMS::Client do
 
       context "error is a known transient error" do
         it "raises an ignorable VBMS::HTTPError" do
-          error_response = double("response", code: 400, body: "FAILED FOR UNKNOWN REASONS")
-          allow(HTTPI).to receive(:post).and_return(error_response)
+          error_response = double("response", status: 400, body: "FAILED FOR UNKNOWN REASONS")
+          allow(Faraday).to receive(:new).and_return(double(post: error_response))
 
           expect { @client.send_request(@request) }.to raise_error do |error|
             expect(error.class).to eq VBMS::HTTPError
@@ -287,12 +288,17 @@ describe VBMS::Client do
   describe "#build_request" do
     before do
       @client = new_test_client(use_forward_proxy: true)
+      @base_url = "http://test.endpoint.url/"
+      allow(@client).to receive(:@base_url).and_return(@base_url)
+
+      stub_request(:post, /./)  # Matches any URL
+        .to_return(status: 200, body: "response", headers: {})
     end
 
     subject { @client.build_request("https://some.fake.endpoint", {}, {}) }
 
     it "adds host header required by proxy" do
-      expect(subject.headers["Host"]).to eq("test.endpoint.url/")
+      expect(subject.env.request_headers["Host"]).to eq("test.endpoint.url/")
     end
   end
 end

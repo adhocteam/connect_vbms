@@ -5,7 +5,8 @@ require "base64"
 require "benchmark"
 require "erb"
 require "httpclient"
-require "httpi"
+require 'net/http'
+require 'uri'
 require "tempfile"
 require "uri"
 require "nokogiri"

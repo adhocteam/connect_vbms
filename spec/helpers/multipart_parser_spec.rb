@@ -2,7 +2,7 @@
 
 describe MultipartParser do
   context "#xml_content" do
-    let(:response) { HTTPI::Response.new 200, { "Content-Type" => content_type }, body }
+    let(:response) { double("response", status: 200, headers: { "Content-Type" => content_type }, body: body) }
     subject { MultipartParser.new(response).xml_content }
 
     context "when response is multipart" do
@@ -46,7 +46,7 @@ describe MultipartParser do
   end
 
   context "#mtom_content" do
-    let(:response) { HTTPI::Response.new 200, { "Content-Type" => content_type }, body }
+    let(:response) { double("response", status: 200, headers: { "Content-Type" => content_type }, body: body) }
     subject { MultipartParser.new(response).mtom_content }
 
     context "when response is multipart" do
