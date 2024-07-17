@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'ostruct'
+
 module VBMS
   module Responses
     class Contention < OpenStruct
