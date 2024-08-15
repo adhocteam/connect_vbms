@@ -3,11 +3,11 @@
 module VBMS
   # Current major release.
   # @return [Integer]
-  MAJOR = 1
+  MAJOR = 2
 
   # Current minor release.
   # @return [Integer]
-  MINOR = 4
+  MINOR = 1
 
   # Current patch level.
   # @return [Integer]
